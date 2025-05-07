@@ -7,6 +7,8 @@ import { ref } from 'vue';
 const movies = ref<MovieModel[]>()
 axios.get('https://movie.pequla.com/api/movie')
     .then(rsp => movies.value = rsp.data)
+
+    
 </script>
 
 <template>
@@ -17,8 +19,13 @@ axios.get('https://movie.pequla.com/api/movie')
                 <RouterLink :to="`/movies/${m.shortUrl}`"> 
                     {{ m.title }} (Reziser: {{ m.director.name }})
                 </RouterLink>
+                <p>Glumci:</p>
                 <ul v-for="a of m.movieActors">
                     <li>{{ a.actor.name }}</li>
+                </ul>
+                <p>Zanrovi:</p>
+                <ul v-for="z of m.movieGenres">
+                    <li>{{ z.genre.name }}</li>
                 </ul>
             </li>
         </ul>

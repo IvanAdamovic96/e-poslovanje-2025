@@ -1,6 +1,6 @@
 import type { ActorModel } from "./actor.model";
 import type { DirectorModel } from "./director.model";
-import type { GanreModel } from "./ganre.model";
+import type { GenreModel } from "./genre.model";
 
 export interface MovieModel {
     movieId: number,
@@ -20,7 +20,7 @@ export interface MovieModel {
     updatedAt: string | null,
     director: DirectorModel,
     movieActors: ActorModel[],
-    movieGanres: GanreModel[]
+    movieGenres: GenreModel[]
 }
 
 
