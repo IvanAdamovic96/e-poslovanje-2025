@@ -1,11 +1,5 @@
-export interface ActorModel{
-    movieActorId: number,
-    movieId: number,
+export interface ActorModel {
     actorId: number,
-    actor: {
-        actorId: number,
-        name: string,
-        createdAt: string
-    }
-
+    name: string,
+    createdAt: string
 }
