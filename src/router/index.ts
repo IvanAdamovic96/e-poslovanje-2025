@@ -4,6 +4,8 @@ import AboutView from '@/views/AboutView.vue'
 import MovieView from '@/views/MovieView.vue'
 import MoviesListView from '@/views/MoviesListView.vue'
 import CinemaView from '@/views/CinemaView.vue'
+import EditCinema from '@/views/EditCinema.vue'
+import CreateCinema from '@/views/CreateCinema.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +51,22 @@ const router = createRouter({
       }
     },
     {
+      path: '/cinema/new',
+      name: 'new-cinema',
+      component: CreateCinema,
+      meta: {
+        title: 'New Cinema'
+      }
+    },
+    {
+      path: '/cinema/:id',
+      name: 'edit-cinema',
+      component: EditCinema,
+      meta: {
+        title: 'Edit cinema'
+      }
+    },
+    {
       path: '/:catchAll(.*)',
       redirect: '/'
     }
@@ -56,7 +74,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta){
+  if (to.meta) {
     document.title = `${to.meta.title} / E-Poslovanje 2025`;
   }
   next();
