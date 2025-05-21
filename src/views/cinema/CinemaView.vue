@@ -3,6 +3,7 @@ import type { CinemaModel } from '@/models/cinema.model';
 import { CinemaService } from '@/services/cinema.service';
 import { ref } from 'vue';
 import { formatDate } from '@/utils';
+import Navigation from '@/components/Navigation.vue';
 
 const cinemas = ref<CinemaModel[]>()
 CinemaService.getCinemas()
@@ -21,6 +22,7 @@ function deleteCinema(id: number) {
 </script>
 
 <template>
+    <Navigation />
     <h1>Cinemas</h1>
     <RouterLink to="/cinema/new" class="btn btn-primary">Add new cinema</RouterLink>
     <table class="table table-striped table-hover" v-if="cinemas">

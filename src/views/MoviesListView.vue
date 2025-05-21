@@ -1,17 +1,24 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
 import type { MovieModel } from '@/models/movie.model';
 import axios from 'axios';
 import { ref } from 'vue';
 
 
 const movies = ref<MovieModel[]>()
-axios.get('https://movie.pequla.com/api/movie')
+/* axios.get('https://movie.pequla.com/api/movie')
     .then(rsp => movies.value = rsp.data)
+ */
 
+
+
+ 
+//Ovde motore ucitati !!!!
     
 </script>
 
 <template>
+    <Navigation />
     <div v-if="movies">
         <p>Filmovi</p>
         <ul>

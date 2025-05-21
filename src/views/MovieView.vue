@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
 import type { MovieModel } from '@/models/movie.model';
 import { MovieService } from '@/services/movie.service';
 import { ref } from 'vue';
@@ -14,6 +15,7 @@ MovieService.getMovieByShortUrl(route.params.link as string)
 </script>
 
 <template>
+    <Navigation />
     <div class="pt-5" v-if="movie">
         <div class="row mt-3">
             <div class="col-12 col-md-3">

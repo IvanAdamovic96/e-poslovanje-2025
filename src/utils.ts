@@ -1,5 +1,6 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./auth";
+import type { UserModel } from "./models/user.model";
 
 export async function useAxios(url: string, method: 'get' | 'post' | 'put' | 'delete' = 'get', data: any = {}, retry = true) {
     // return await axios.request({
@@ -19,12 +20,12 @@ export async function useAxios(url: string, method: 'get' | 'post' | 'put' | 'de
         const accessToken = getAccessToken()
 
         const config: AxiosRequestConfig = {
-            baseURL: 'http://localhost:3000/api',
+            baseURL: 'http://localhost:3000/',
             url: url,
             method: method,
             headers: {
                 'Accept': 'application/json',
-                'Authorization': accessToken ? `Bearer ${accessToken}` : ''
+                ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
             },
             data,
             validateStatus: () => true
@@ -32,15 +33,23 @@ export async function useAxios(url: string, method: 'get' | 'post' | 'put' | 'de
 
         const response = await axios.request(config)
 
-        // Handle 403 or token expiry (you can customize based on backend error message)
+        /* if ((response.status === 401 || response.status === 403) && response.data?.redirect) {
+            console.warn(`Redirecting to ${response.data.redirect} due to authentication issue.`);
+            clearTokens(); 
+            window.location.href = response.data.redirect;
+            throw new Error('REDIRECT_TO_LOGIN');
+        } */
+
+
+
         if (response.status === 403 && retry) {
             const newAccess = await refreshAccessToken()
             if (newAccess) {
-                return useAxios(url, method, data, false) // retry once
+                return useAxios(url, method, data, false)
             }
         }
 
-        // Handle other status codes - OK and NO_CONTENT
+
         if (response.status === 200 || response.status === 204) {
             return response
         }
@@ -58,13 +67,13 @@ export async function useAxios(url: string, method: 'get' | 'post' | 'put' | 'de
 }
 
 export async function login(email: string, password: string) {
-    const response = await axios.post('http://localhost:3000/api/user/login', {
+    return await axios.post('http://localhost:3000/user/login', {
         email,
         password
     })
-
-    setTokens(response.data)
-    return response.data
+}
+export async function register(model: any) {
+    return await axios.post('http://localhost:3000/user/register', model)
 }
 
 export function formatDate(iso: string) {
@@ -84,7 +93,7 @@ async function refreshAccessToken() {
 
     try {
         const rsp = await axios.request({
-            url: 'http://localhost:3000/api/user/refresh',
+            url: 'http://localhost:3000/user/refresh',
             method: 'post',
             headers: {
                 'Accept': 'application/json',
