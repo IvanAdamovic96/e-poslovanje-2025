@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import Navigation from '@/components/Navigation.vue';
-import type { ActorModel } from '@/models/actor.model';
-import type { DirectorModel } from '@/models/director.model';
-import type { GenreModel } from '@/models/genre.model';
-import type { MovieModel } from '@/models/movie.model';
-import type { SearchModel } from '@/models/search.model';
-import { MovieService } from '@/services/movie.service';
-import axios from 'axios';
-import { ref } from 'vue';
-
 
 /* const movies = ref<MovieModel[]>();
 const actors = ref<ActorModel[]>()

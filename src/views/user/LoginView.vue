@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { setTokens } from '@/auth';
+import { AuthService } from '@/services/auth.service';
 import Navigation from '@/components/Navigation.vue';
 import { login } from '@/utils';
 import { ref } from 'vue';
@@ -15,7 +15,7 @@ function doLogin() {
     if (email.value == '' || password.value == '') return
 
     login(email.value, password.value).then(rsp => {
-        setTokens(rsp.data)
+        AuthService.setTokens(rsp.data)
         if (route.query.r) {
             router.push(route.query.r as string)
             return

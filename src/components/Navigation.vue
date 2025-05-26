@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getRefreshToken, getUserEmail } from '@/auth';
+import { AuthService } from '@/services/auth.service';
 import { useLogout } from '@/hooks/logout.hooks';
 
 const logout = useLogout()
@@ -33,12 +33,12 @@ const logout = useLogout()
                         <RouterLink class="nav-link" to="/contact" exact-active-class="active">Contact Us</RouterLink>
                     </li>
                 </ul>
-                <template v-if="getRefreshToken()">
+                <template v-if="AuthService.getRefreshToken()">
                     <div class="dropdown">
                         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <span class="" v-if="getRefreshToken()">
-                                <i class="fa-solid fa-user"></i> {{ getUserEmail() }}
+                            <span class="" v-if="AuthService.getRefreshToken()">
+                                <i class="fa-solid fa-user"></i> {{ AuthService.getUserEmail() }}
                             </span>
                         </a>
                         <ul class="dropdown-menu">

@@ -1,23 +1,13 @@
 import axios, { type AxiosRequestConfig } from "axios";
-import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./auth";
+import { AuthService } from "./services/auth.service";
 import type { UserModel } from "./models/user.model";
+import Swal from "sweetalert2";
 
 export async function useAxios(url: string, method: 'get' | 'post' | 'put' | 'delete' = 'get', data: any = {}, retry = true) {
-    // return await axios.request({
-    //     baseURL: 'http://localhost:3000/api',
-    //     url: url,
-    //     method: method,
-    //     headers: {
-    //         'Accept': 'application/json'
-    //     },
-    //     data: data,
-    //     validateStatus: (status: number) => {
-    //         return true
-    //     }
-    // })
+
 
     try {
-        const accessToken = getAccessToken()
+        const accessToken = AuthService.getAccessToken()
 
         const config: AxiosRequestConfig = {
             baseURL: 'http://localhost:3000/',
@@ -88,7 +78,7 @@ export function formatDate(iso: string) {
 }
 
 async function refreshAccessToken() {
-    const refreshToken = getRefreshToken()
+    const refreshToken = AuthService.getRefreshToken()
     if (!refreshToken) return null
 
     try {
@@ -101,12 +91,45 @@ async function refreshAccessToken() {
             }
         })
 
-        setTokens(rsp.data)
+        AuthService.setTokens(rsp.data)
         return rsp.data.access
 
     } catch (error) {
-        clearTokens()
+        AuthService.clearTokens()
         console.error('Token refresh failed')
         return null
     }
+}
+
+
+
+//--------------------------------------------------
+
+const boostrapStyle = {
+    popup: 'card',
+    cancelButton: 'btn btn-danger',
+    denyButton: 'btn btn-secondary',
+    confirmButton: 'btn btn-primary'
+
+}
+
+export function showError(message: string) {
+    Swal.fire({
+        title: 'Something went wrong!',
+        text: message,
+        icon: 'error',
+        customClass: boostrapStyle
+    })
+}
+
+export function showConfirm(message: string, callback: Function) {
+    Swal.fire({
+        title: 'Are you sure you want to make changes?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        //text: message,
+        icon: 'question',
+        customClass: boostrapStyle
+    }).then()
 }

@@ -14,6 +14,8 @@ import BikeView from '@/views/bike/BikeView.vue'
 import BikeNew from '@/views/bike/BikeNew.vue'
 import BikeEdit from '@/views/bike/BikeEdit.vue'
 import ContactView from '@/views/ContactView.vue'
+import NewReservation from '@/views/reservation/NewReservation.vue'
+import ReservationListView from '@/views/reservation/ReservationListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +69,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/reservation',
+      name: 'reservation',
+      component: ReservationListView,
+      meta: {
+        title: 'Reservations'
+      }
+    },
+    {
       path: '/movie/:link',
       name: 'movie',
       component: MovieView,
@@ -96,6 +106,14 @@ const router = createRouter({
       component: BikeView,
       meta: {
         title: 'Bike-details'
+      }
+    },
+    {
+      path: '/bikes/:id/reservation',
+      name: 'bike-reservation',
+      component: NewReservation,
+      meta: {
+        title: 'Bike-reservation'
       }
     },
     {
