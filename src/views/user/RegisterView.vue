@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Navigation from '@/components/Navigation.vue';
-import { register } from '@/utils';
+import { UserService } from '@/services/user.service';
+import { showError } from '@/utils';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -28,7 +29,7 @@ function doRegister() {
         return
     }
 
-    register({
+    UserService.register({
         firstName: firstName.value,
         lastName: lastName.value,
         email: email.value,
@@ -36,7 +37,7 @@ function doRegister() {
         password: password.value
     })
     .then(rsp => router.push('/login'))
-    .catch(e=> alert('Registration failed!'))
+    .catch(e=> showError('Registration failed!'))
 }
 
 </script>

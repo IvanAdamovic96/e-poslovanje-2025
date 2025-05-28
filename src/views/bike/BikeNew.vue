@@ -4,7 +4,6 @@ import { useLogout } from '@/hooks/logout.hooks';
 import type { BikeModel } from '@/models/bike.model';
 import { BikeService } from '@/services/bike.service';
 
-import { CinemaService } from '@/services/cinema.service';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -50,7 +49,7 @@ function save() {
         .then(rsp => {
             router.push('/bikes')
         })
-        .catch((e) => logout())
+        .catch((e) => logout(e))
 }
 
 </script>

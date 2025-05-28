@@ -1,11 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AboutView from '@/views/AboutView.vue'
-import MovieView from '@/views/MovieView.vue'
-import MoviesListView from '@/views/MoviesListView.vue'
-import CinemaView from '@/views/cinema/CinemaView.vue'
-import EditCinema from '@/views/cinema/EditCinema.vue'
-import CreateCinema from '@/views/cinema/CreateCinema.vue'
 import LoginView from '@/views/user/LoginView.vue'
 import UserView from '@/views/user/UserView.vue'
 import RegisterView from '@/views/user/RegisterView.vue'
@@ -16,6 +11,9 @@ import BikeEdit from '@/views/bike/BikeEdit.vue'
 import ContactView from '@/views/ContactView.vue'
 import NewReservation from '@/views/reservation/NewReservation.vue'
 import ReservationListView from '@/views/reservation/ReservationListView.vue'
+import UserEdit from '@/views/user/UserEdit.vue'
+import ReservationDetails from '@/views/reservation/ReservationDetails.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +40,15 @@ const router = createRouter({
       component: RegisterView,
       meta: {
         title: 'Register'
+      }
+    },
+    {
+      path: '/user/edit',
+      name: 'profile',
+      component: UserEdit,
+      meta: { 
+        title: 'Edit user',
+        requiresAuth: true 
       }
     },
     {
@@ -77,21 +84,14 @@ const router = createRouter({
       }
     },
     {
-      path: '/movie/:link',
-      name: 'movie',
-      component: MovieView,
+      path: '/reservation/:id/details',
+      name: 'details-reservation',
+      component: ReservationDetails,
       meta: {
-        title: 'Movie'
+        title: 'Reservations details'
       }
     },
-    {
-      path: '/movieslist',
-      name: 'movieslist',
-      component: MoviesListView,
-      meta: {
-        title: 'Movies'
-      }
-    },
+
     {
       path: '/bikes',
       name: 'bikes',
@@ -132,30 +132,6 @@ const router = createRouter({
         title: 'Edit bike'
       }
     },
-    /* {
-      path: '/cinema',
-      name: 'cinema',
-      component: CinemaView,
-      meta: {
-        title: 'Cinemas'
-      }
-    },
-    {
-      path: '/cinema/new',
-      name: 'new-cinema',
-      component: CreateCinema,
-      meta: {
-        title: 'New Cinema'
-      }
-    },
-    {
-      path: '/cinema/:id',
-      name: 'edit-cinema',
-      component: EditCinema,
-      meta: {
-        title: 'Edit cinema'
-      }
-    }, */
     {
       path: '/:catchAll(.*)',
       redirect: '/'

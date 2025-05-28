@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { AuthService } from '@/services/auth.service';
 import Navigation from '@/components/Navigation.vue';
-import { login } from '@/utils';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { UserService } from '@/services/user.service';
+import { showError } from '@/utils';
+
 
 
 const email = ref<string>('')
@@ -14,7 +16,7 @@ const router = useRouter()
 function doLogin() {
     if (email.value == '' || password.value == '') return
 
-    login(email.value, password.value).then(rsp => {
+    UserService.login(email.value, password.value).then(rsp => {
         AuthService.setTokens(rsp.data)
         if (route.query.r) {
             router.push(route.query.r as string)
@@ -23,7 +25,7 @@ function doLogin() {
 
         router.push('/')
     })
-        .catch(e => alert('Login failed!'))
+        .catch(e => showError('Email or password not valid!'))
 }
 
 </script>

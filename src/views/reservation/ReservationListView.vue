@@ -1,58 +1,43 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue';
 import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hooks';
 import type { ReservationModel } from '@/models/reservation.model';
 import { ReservationService } from '@/services/reservation.service';
-import { formatDate } from '@/utils';
+import { formatDate, showConfirm } from '@/utils';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const logout = useLogout()
 const reservations = ref<ReservationModel[]>([]);
-const errorMessage = ref('');
-const successMessage = ref('');
+const router = useRouter()
 
 onMounted(async () => {
     await fetchReservations();
-    /* try {
-        reservations.value = await ReservationService.getMyReservations();
-    } catch (error: any) {
-        console.error('Error fetching reservations:', error);
-        errorMessage.value = 'Greška pri učitavanju rezervacija. Molimo pokušajte ponovo.';
-        if (error.response && error.response.data && error.response.data.message) {
-            errorMessage.value = error.response.data.message;
-        }
-    } */
 });
 
-async function fetchReservations() {
-    errorMessage.value = '';
-    successMessage.value = '';
-    try {
-        reservations.value = await ReservationService.getMyReservations();
-    } catch (error: any) {
-        console.error('Error fetching reservations:', error);
-        errorMessage.value = 'Error loading reservations. Please try again.';
-        if (error.response && error.response.data && error.response.data.message) {
-            errorMessage.value = error.response.data.message;
-        }
-    }
+function fetchReservations() {
+    ReservationService.getMyReservations()
+        .then(rsp => reservations.value = rsp.data)
+        .catch((e) => logout(e))
 }
 
 async function cancelReservation(reservationId: number) {
-    if (confirm('Are you sure you want to cancel this reservation?')) {
-        try {
-            await ReservationService.deleteReservation(reservationId);
-            successMessage.value = 'Reservation cancelled successfully!';
-            await fetchReservations();
-        } catch (error: any) {
-            console.error('Error canceling reservation:', error);
-            errorMessage.value = 'Error canceling a reservation. Please try again.';
-            if (error.response && error.response.data && error.response.data.message) {
-                errorMessage.value = error.response.data.message;
-            }
-        }
-    }
+    showConfirm('Are you sure you want to cancel this reservation?', async () => {
+        await ReservationService.deleteReservation(reservationId);
+        await fetchReservations()
+    })
 }
 
+
+function payReservation(model: ReservationModel) {
+
+    showConfirm(`Pay reservation for ${model.bike?.brand} ${model.bike?.model}?`, () => {
+        ReservationService.payReservation(model.reservationId)
+            .then(rsp => fetchReservations())
+            .catch(e => logout(e))
+    })
+}
 
 </script>
 
@@ -73,7 +58,7 @@ async function cancelReservation(reservationId: number) {
             </ol>
         </nav>
 
-        <div class="container mt-4">
+        <div class="container mt-4" v-if="reservations.length > 0">
             <h1 class="mb-4">My reservations</h1>
 
             <div ass="row row-cols-1 g-4">
@@ -89,18 +74,21 @@ async function cancelReservation(reservationId: number) {
                                     <h5 class="card-title mb-1">
                                         <span v-if="reservation.bike">{{ reservation.bike.brand }} {{
                                             reservation.bike.model
-                                            }} ({{ reservation.bike.year }})</span>
+                                        }} ({{ reservation.bike.year }})</span>
                                         <span v-else>Bike not found</span>
                                     </h5>
-                                    <p class="card-text text-muted mb-1">
-                                        Status: <span
-                                            :class="{ 'badge bg-warning': reservation.status === 'pending_payment', 'badge bg-success': reservation.status === 'confirmed', 'badge bg-danger': reservation.status === 'canceled' }">{{
-                                                reservation.status }}</span>
+                                    <p class="card-text fs-5 mb-1">
+                                        Status: <span :class="{
+                                            'badge bg-warning': reservation.status === 'pending_payment',
+                                            'badge bg-success': reservation.status === 'completed',
+                                            'badge bg-danger': reservation.status === 'canceled'
+                                        }">{{
+                                                    reservation.status }}</span>
                                     </p>
                                     <p class="card-text mb-1">Reservation valid until: {{
                                         formatDate(reservation.reservedUntil) }}
                                     </p>
-                                    <p class="card-text mb-0">Total price for payment: <strong>{{ reservation.totalPrice
+                                    <p class="card-text mb-0">Total price for reservation: <strong>{{ reservation.totalPrice
                                         ?
                                         reservation.totalPrice : 'N/A' }} €</strong></p>
                                     <p class="card-text text-small text-muted">Created at: {{
@@ -109,25 +97,38 @@ async function cancelReservation(reservationId: number) {
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-end">
-                            <RouterLink v-if="reservation.bike" :to="`/bikes/${reservation.bike.bikeId}`"
-                                class="btn btn-sm btn-outline-primary me-1">
-                                <i class="fa-solid fa-circle-info"></i> Bike details
-                            </RouterLink>
-                            <button v-if="['pending_payment', 'confirmed'].includes(reservation.status)"
-                                @click="cancelReservation(reservation.reservationId)" class="btn btn-sm btn-danger">
-                                <i class="fa-regular fa-credit-card"></i> Cancel reservation
-                            </button>
-                            <RouterLink v-if="reservation.bike" :to="`/bikes/${reservation.bike.bikeId}`"
-                                class="btn btn-sm btn-warning">
-                                <i class="fa-regular fa-credit-card"></i> Go to payment
-                            </RouterLink>
+                            <template v-if="reservation.paidAt == null">
+                                <RouterLink v-if="reservation.bike" :to="`/bikes/${reservation.bike.bikeId}`"
+                                    class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fa-solid fa-circle-info"></i> Bike details
+                                </RouterLink>
+                                <button v-if="['pending_payment'].includes(reservation.status)"
+                                    @click="cancelReservation(reservation.reservationId)"
+                                    class="btn btn-sm btn-danger me-1">
+                                    <i class="fa-regular fa-credit-card"></i> Cancel reservation
+                                </button>
+                                <button v-if="['pending_payment'].includes(reservation.status)"
+                                    @click="payReservation(reservation)" class="btn btn-sm btn-warning me-1">
+                                    <i class="fa-regular fa-credit-card"></i> Go to payment
+                                </button>
+                            </template>
+                            <template v-else>
+                                <RouterLink v-if="reservation.bike" :to="`/bikes/${reservation.bike.bikeId}`"
+                                    class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fa-solid fa-circle-info"></i> Bike details
+                                </RouterLink>
+                                <RouterLink v-if="reservation.bike" :to="`/reservation/${reservation.reservationId}/details`"
+                                    class="btn btn-sm btn-outline-success me-1">
+                                    <i class="fa-solid fa-circle-info"></i> Reservation details
+                                </RouterLink>
+                            </template>
                         </div>
                     </div>
                 </div>
             </div>
-            <div v-if="successMessage" class="alert alert-success" role="alert">
-                {{ successMessage }}
-            </div>
+        </div>
+        <div v-else>
+            You dont have any reservations!
         </div>
     </div>
     <Loading v-else />

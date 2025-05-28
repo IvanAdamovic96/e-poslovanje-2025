@@ -4,27 +4,30 @@ import { useLogout } from '@/hooks/logout.hooks';
 import type { BookmarkModel } from '@/models/bookmark.model';
 import type { UserModel } from '@/models/user.model';
 import { BookmarkService } from '@/services/bookmark.service';
-import { formatDate, useAxios } from '@/utils';
+import { UserService } from '@/services/user.service';
+import { formatDate, showConfirm } from '@/utils';
 import { ref } from 'vue';
 
 const user = ref<UserModel>()
 const logout = useLogout()
 
-useAxios('/user/self')
+UserService.getSelfUser()
     .then(rsp => user.value = rsp.data)
-    .catch(e => logout())
+    .catch(e => logout(e))
 
 function deleteBookmark(model: BookmarkModel) {
-    if (!confirm(`Delete saved bike ${model.bike.model}?`)) return
+    showConfirm(`Delete saved bike ${model.bike.model}?`, () => {
+        BookmarkService.deleteBookmark(model.bookmarkId)
+            .then(rsp => {
+                if (user.value == null) return
+                user.value!.bookmarks = user.value?.bookmarks.filter(b =>
+                    b.bookmarkId !== model.bookmarkId
+                )
+            })
+            .catch(e => logout(e))
+    })
 
-    BookmarkService.deleteBookmark(model.bookmarkId)
-    .then(rsp => {
-            if (user.value == null) return
-            user.value!.bookmarks = user.value?.bookmarks.filter(b =>
-                b.bookmarkId !== model.bookmarkId
-            )
-        })
-    .catch(e => logout())
+
 
     /* useAxios(`/bookmark/${model.bookmarkId}`, 'delete')
         .then(rsp => {
@@ -64,6 +67,9 @@ function deleteBookmark(model: BookmarkModel) {
             </table>
             <RouterLink to="/reservation" class="btn btn-info me-1">
                 <i class="fa-regular fa-rectangle-list"></i> My reservations
+            </RouterLink>
+            <RouterLink to="/user/edit" class="btn btn-outline-secondary me-1">
+                <i class="fa-regular fa-rectangle-list"></i> Edit profile
             </RouterLink>
         </div>
         <h5><strong>Saved bikes:</strong></h5>

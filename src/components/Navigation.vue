@@ -43,6 +43,7 @@ const logout = useLogout()
                         </a>
                         <ul class="dropdown-menu">
                             <li><RouterLink class="dropdown-item" to="/user">My Profile</RouterLink></li>
+                            <li><RouterLink class="dropdown-item" to="/reservation">My Reservations</RouterLink></li>
                             <li><button type="button" class="dropdown-item" @click="logout">Logout</button></li>
                         </ul>
                     </div>

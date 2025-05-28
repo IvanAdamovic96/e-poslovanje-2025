@@ -1,5 +1,6 @@
 import type { ReservationModel } from "@/models/reservation.model";
-import { useAxios } from "@/utils";
+import { UserService } from "./user.service";
+
 
 interface CreateReservationPayload {
     bikeId: number;
@@ -9,17 +10,26 @@ export class ReservationService {
 
     static async createReservation(payload: CreateReservationPayload) {
         console.log('Payload sent to useAxios:', payload);
-        return await useAxios('/reservation', 'post', payload)
+        return await UserService.useAxios('/reservation', 'post', payload)
+    }
+    
+    static async getReservationById(id: number) {
+        return await UserService.useAxios<ReservationModel>(`/reservation/${id}`)
     }
 
     static async getMyReservations() {
-        const response = await useAxios('/reservation', 'get');
-        return response.data;
+        return await UserService.useAxios<ReservationModel[]>('/reservation');
     }
 
+
+    static async payReservation(id: number){
+        return await UserService.useAxios(`/reservation/${id}/pay`, 'put')
+    }
 
     static async deleteReservation(reservationId: number) {
-        await useAxios(`/reservation/${reservationId}`, 'delete');
+        return await UserService.useAxios(`/reservation/${reservationId}`, 'delete');
     }
+
+
 
 }

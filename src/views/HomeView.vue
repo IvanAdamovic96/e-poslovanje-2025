@@ -1,38 +1,6 @@
 <script setup lang="ts">
 import Navigation from '@/components/Navigation.vue';
 
-/* const movies = ref<MovieModel[]>();
-const actors = ref<ActorModel[]>()
-const genres = ref<GenreModel[]>()
-const directors = ref<DirectorModel[]>()
-const search = ref<SearchModel>({
-    actor: 0,
-    genre: 0,
-    director: 0
-})
-
-
-
-
-MovieService.getActors()
-    .then(response => actors.value = response.data)
-
-MovieService.getGenres()
-    .then(response => genres.value = response.data)
-
-MovieService.getDirectores()
-    .then(response => directors.value = response.data)
-
-
-
-function loadMovies() {
-    MovieService.getMovies(search.value)
-        .then(response => movies.value = response.data)
-}
-
-
-loadMovies() */
-
 </script>
 
 <template>

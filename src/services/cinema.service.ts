@@ -1,9 +1,9 @@
 import type { CinemaModel } from "@/models/cinema.model";
-import { useAxios } from "@/utils";
+
 import axios from "axios";
 
 export class CinemaService {
-    static async getCinemas() {
+    /* static async getCinemas() {
         return await useAxios('/cinema')
     }
 
@@ -21,5 +21,5 @@ export class CinemaService {
 
     static async deleteCinemaById(id: number) {
         return await useAxios(`/cinema/${id}`, 'delete')
-    }
+    } */
 }

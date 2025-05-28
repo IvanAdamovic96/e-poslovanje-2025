@@ -7,6 +7,8 @@ export interface ReservationModel{
     totalPrice: number
     reservedUntil: string
     status: string
+    paidAt: null | string
+    transactionId: null | number
     createdAt: string
     updatedAt: string
     bike?: BikeModel

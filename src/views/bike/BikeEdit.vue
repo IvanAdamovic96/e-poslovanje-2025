@@ -5,8 +5,7 @@ import { useLogout } from '@/hooks/logout.hooks';
 import type { BikeModel } from '@/models/bike.model';
 import type { CinemaModel } from '@/models/cinema.model';
 import { BikeService } from '@/services/bike.service';
-import { CinemaService } from '@/services/cinema.service';
-import { formatDate } from '@/utils';
+import { formatDate, showConfirm } from '@/utils';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -22,7 +21,7 @@ const bike = ref<BikeModel>()
 
 BikeService.getBikeById(route.params.id as string)
     .then(rsp => bike.value = rsp.data)
-    .catch((e) => logout())
+    .catch((e) => logout(e))
 
 function save() {
     if (bike.value == null) return
@@ -30,7 +29,8 @@ function save() {
         .then(rsp => {
             router.push('/bikes')
         })
-        .catch((e) => logout())
+        .catch((e) => logout(e))
+
 }
 
 </script>

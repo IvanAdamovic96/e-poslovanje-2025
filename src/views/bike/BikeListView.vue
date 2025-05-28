@@ -7,8 +7,11 @@ import { BikeService } from '@/services/bike.service';
 import { BookmarkService } from '@/services/bookmark.service';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useLogout } from '@/hooks/logout.hooks';
+import { showConfirm } from '@/utils';
 
 
+const logout = useLogout()
 const brands = ref('')
 
 const filters = ref({
@@ -27,12 +30,11 @@ function loadBikes() {
 }
 const router = useRouter()
 function addBookmark(bike: BikeModel) {
-
-    if (!confirm(`Add ${bike.brand + ` ` + bike.model} to bookmarks?`)) return
-    
-    BookmarkService.createBookmark(bike.bikeId)
-        .then(rsp => router.push('/user'))
-        .catch(e => alert(e.message))
+    showConfirm(`Add ${bike.brand + ` ` + bike.model} to bookmarks?`, () => {
+        BookmarkService.createBookmark(bike.bikeId)
+            .then(rsp => router.push('/user'))
+            .catch((e) => logout(e))
+    })
 }
 
 loadBikes()
@@ -67,8 +69,8 @@ loadBikes()
                         </h3>
                         <p class="card-text">{{ bike.description.substring(0, 100) }}...</p>
                         <p class="card-text">Year: {{ bike.year }}</p>
-                        <p class="card-text">Displacement: {{ bike.displacement }} cc</p> 
-                        <h3 ><b>Price: </b>  {{ bike.price }} €</h3>
+                        <p class="card-text">Displacement: {{ bike.displacement }} cc</p>
+                        <h3><b>Price: </b> {{ bike.price }} €</h3>
                         <!-- <p class="card-text text-end"><b>Price:</b> {{ bike.price }} €</p> -->
                     </div>
                     <div class="card-footer">
@@ -76,11 +78,11 @@ loadBikes()
                             <RouterLink :to="`/bikes/${bike.bikeId}`" class="btn btn-sm btn-outline-primary">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Details
                             </RouterLink>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" v-if="AuthService.getRefreshToken()"
-                                @click="addBookmark(bike)">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                v-if="AuthService.getRefreshToken()" @click="addBookmark(bike)">
                                 <i class="fa-solid fa-bookmark"></i> Save
                             </button>
-                            
+
                         </div>
                     </div>
                 </div>

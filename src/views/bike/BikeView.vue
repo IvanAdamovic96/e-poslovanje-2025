@@ -2,7 +2,7 @@
 import type { CinemaModel } from '@/models/cinema.model';
 import { CinemaService } from '@/services/cinema.service';
 import { ref } from 'vue';
-import { formatDate } from '@/utils';
+import { formatDate, showConfirm } from '@/utils';
 import Navigation from '@/components/Navigation.vue';
 import type { BikeModel } from '@/models/bike.model';
 import { useRoute, useRouter } from 'vue-router';
@@ -19,24 +19,18 @@ const bike = ref<BikeModel>()
 
 BikeService.getBikeById(route.params.id as string)
     .then(rsp => bike.value = rsp.data)
+    .catch((e) => logout(e))
 
 
 function deleteBike(id: number) {
-    BikeService.deleteBikeById(id)
-        .then(rsp => {
-            router.push('/bikes')
-        })
-        .catch((e) => logout())
-
-
+    showConfirm(`Are you sure you want to delete ${bike.value?.model}`, () => {
+        BikeService.deleteBikeById(id)
+            .then(rsp => {
+                router.push('/bikes')
+            })
+            .catch((e) => logout(e))
+    })
 }
-/*
-function deleteBike(id: number) {
-    CinemaService.deleteCinemaById(id)
-        .then(rsp => {
-            cinemas.value = cinemas.value?.filter(c => c.cinemaId !== id)
-        })
-} */
 
 
 </script>
@@ -83,11 +77,11 @@ function deleteBike(id: number) {
                 <div class="card-footer">
                     <div class="button-group d-flex justify-content-between">
                         <p class="card-text mt-3"><small class="text-muted">Created at: {{ formatDate(bike.createdAt)
-                        }}</small></p>
+                                }}</small></p>
                         <!-- <RouterLink to="/bikes" class="btn btn-info mt-3">Go back</RouterLink> -->
 
                         <RouterLink class="btn btn-warning mt-3" :to="`/bikes/${bike.bikeId}/reservation`">
-                            <i class="fa-solid fa-ticket"></i>  Make a reservation
+                            <i class="fa-solid fa-ticket"></i> Make a reservation
                         </RouterLink>
                     </div>
                 </div>
