@@ -9,16 +9,18 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLogout } from '@/hooks/logout.hooks';
 import { showConfirm } from '@/utils';
+import { UserService } from '@/services/user.service';
 
 
 const logout = useLogout()
-const brands = ref('')
+const router = useRouter()
+/* const brands = ref('')
 
 const filters = ref({
     brand: '',
     year: '',
 });
-const availableBrands = ref<string[]>([]);
+const availableBrands = ref<string[]>([]); */
 
 const bikes = ref<BikeModel[]>()
 
@@ -28,7 +30,7 @@ function loadBikes() {
     BikeService.getBikes()
         .then(rsp => bikes.value = rsp.data)
 }
-const router = useRouter()
+
 function addBookmark(bike: BikeModel) {
     showConfirm(`Add ${bike.brand + ` ` + bike.model} to bookmarks?`, () => {
         BookmarkService.createBookmark(bike.bikeId)
@@ -42,18 +44,10 @@ loadBikes()
 
 <template>
     <Navigation />
-    <!-- <div class="col-md-3">
-        <label for="brandFilter" class="form-label">Brand:</label>
-        <select v-model="filters.brand" id="brandFilter" class="form-select" @change="loadBikes">
-            <option value="">All brands</option>
-            <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
-        </select>
-    </div> -->
-
 
     <div class="container p-lg-5" v-if="bikes">
         <div class="row mb-5">
-            <div class="container">
+            <div class="container" v-if="AuthService.getRefreshToken()">
                 <RouterLink to="/bikes/new" class="btn btn-primary">Add new bike</RouterLink>
             </div>
         </div>
@@ -71,7 +65,6 @@ loadBikes()
                         <p class="card-text">Year: {{ bike.year }}</p>
                         <p class="card-text">Displacement: {{ bike.displacement }} cc</p>
                         <h3><b>Price: </b> {{ bike.price }} €</h3>
-                        <!-- <p class="card-text text-end"><b>Price:</b> {{ bike.price }} €</p> -->
                     </div>
                     <div class="card-footer">
                         <div class="btn-group">

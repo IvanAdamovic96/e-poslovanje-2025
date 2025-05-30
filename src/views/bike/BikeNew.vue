@@ -3,6 +3,7 @@ import Navigation from '@/components/Navigation.vue';
 import { useLogout } from '@/hooks/logout.hooks';
 import type { BikeModel } from '@/models/bike.model';
 import { BikeService } from '@/services/bike.service';
+import { showError } from '@/utils';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -41,7 +42,8 @@ function save() {
         bike.value.color == '' || bike.value.price == 0 || bike.value.description == '' ||
         bike.value.image == '' || bike.value.engineType == ''|| bike.value.cooling == '' || bike.value.weight == 0
     ) {
-        alert('All field must have values!')
+        showError('All field must have values!')
+        //alert('All field must have values!')
         return
     }
 
@@ -49,7 +51,7 @@ function save() {
         .then(rsp => {
             router.push('/bikes')
         })
-        .catch((e) => logout(e))
+        .catch((e) => showError(e))
 }
 
 </script>

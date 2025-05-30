@@ -80,7 +80,8 @@ const router = createRouter({
       name: 'reservation',
       component: ReservationListView,
       meta: {
-        title: 'Reservations'
+        title: 'Reservations',
+        requiresAuth: true
       }
     },
     {
@@ -88,7 +89,8 @@ const router = createRouter({
       name: 'details-reservation',
       component: ReservationDetails,
       meta: {
-        title: 'Reservations details'
+        title: 'Reservations details',
+        requiresAuth: true
       }
     },
 
@@ -121,8 +123,9 @@ const router = createRouter({
       name: 'bike-create',
       component: BikeNew,
       meta: {
-        title: 'Add new bike'
-      }
+        title: 'Add new bike',
+        requiresAuth: true
+      },
     },
     {
       path: '/bikes/edit/:id',
@@ -140,10 +143,14 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta) {
+  const isAuthenticated = localStorage.getItem('access_token') !== null;
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next({ name: 'login' });
+  } else {
     document.title = `${to.meta.title} / E-Poslovanje 2025`;
+    next();
   }
-  next();
+
 })
 
 export default router

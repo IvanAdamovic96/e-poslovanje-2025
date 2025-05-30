@@ -24,12 +24,15 @@ BikeService.getBikeById(route.params.id as string)
     .catch((e) => logout(e))
 
 function save() {
-    if (bike.value == null) return
-    BikeService.updateBike(id, bike.value)
-        .then(rsp => {
-            router.push('/bikes')
-        })
-        .catch((e) => logout(e))
+    showConfirm('Confirm editing this bike!', () => {
+        if (bike.value == null) return
+        BikeService.updateBike(id, bike.value)
+            .then(rsp => {
+                router.push('/bikes')
+            })
+            .catch((e) => logout(e))
+
+    })
 
 }
 

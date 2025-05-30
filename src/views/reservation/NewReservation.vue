@@ -53,7 +53,7 @@ async function submitReservation() {
         await ReservationService.createReservation({
             bikeId: currentBike.bikeId
         })
-        .catch((e) => showError(e))
+        .catch((e) => showError('You have to be logged in to make a reservation!'))
         
         router.push('/reservation')
 

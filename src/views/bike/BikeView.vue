@@ -10,6 +10,7 @@ import { BikeService } from '@/services/bike.service';
 import Loading from '@/components/Loading.vue';
 import { useLogout } from '@/hooks/logout.hooks';
 import { BookmarkService } from '@/services/bookmark.service';
+import { AuthService } from '@/services/auth.service';
 
 const route = useRoute()
 const router = useRouter()
@@ -56,14 +57,17 @@ function deleteBike(id: number) {
                 <div class="card shadow-lg mb-1">
                     <img :src="bike.image" class="card-img-top" :alt="bike.model">
                 </div>
-                <RouterLink class="btn btn-info" :to="`/bikes/edit/${bike.bikeId}`"><i
-                        class="fa-regular fa-pen-to-square"></i>
-                    Edit
-                </RouterLink>
-                <button class="btn btn-danger ms-1" @click="deleteBike(bike.bikeId)"><i
-                        class="fa-regular fa-trash-can"></i>
-                    Delete
-                </button>
+                <div v-if="AuthService.getRefreshToken()">
+                    <RouterLink class="btn btn-info" :to="`/bikes/edit/${bike.bikeId}`"><i
+                            class="fa-regular fa-pen-to-square"></i>
+                        Edit
+                    </RouterLink>
+                    <button class="btn btn-danger ms-1" @click="deleteBike(bike.bikeId)"><i
+                            class="fa-regular fa-trash-can"></i>
+                        Delete
+                    </button>
+                </div>
+
 
             </div>
             <div class="col">
@@ -77,7 +81,7 @@ function deleteBike(id: number) {
                 <div class="card-footer">
                     <div class="button-group d-flex justify-content-between">
                         <p class="card-text mt-3"><small class="text-muted">Created at: {{ formatDate(bike.createdAt)
-                                }}</small></p>
+                        }}</small></p>
                         <!-- <RouterLink to="/bikes" class="btn btn-info mt-3">Go back</RouterLink> -->
 
                         <RouterLink class="btn btn-warning mt-3" :to="`/bikes/${bike.bikeId}/reservation`">

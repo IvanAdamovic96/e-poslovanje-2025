@@ -4,7 +4,7 @@ import Navigation from '@/components/Navigation.vue';
 import { useLogout } from '@/hooks/logout.hooks';
 import type { ReservationModel } from '@/models/reservation.model';
 import { ReservationService } from '@/services/reservation.service';
-import { formatDate, showConfirm } from '@/utils';
+import { formatDate, showConfirm, showError } from '@/utils';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -19,7 +19,7 @@ onMounted(async () => {
 function fetchReservations() {
     ReservationService.getMyReservations()
         .then(rsp => reservations.value = rsp.data)
-        .catch((e) => logout(e))
+        .catch((e) => showError(e))
 }
 
 async function cancelReservation(reservationId: number) {
